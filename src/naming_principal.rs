@@ -20,6 +20,7 @@ enum NamingPrincipal<'a> {
     Camel(&'a str),
     Pascal(&'a str),
     Chain(&'a str),
+    Empty(&'a str),
     Flat(&'a str),
     NonePrincipal(&'a str),
 }
@@ -45,28 +46,34 @@ impl<'a> NamingPrincipal<'a> {
         if Self::is_chain(source) {
             return Self::Chain(source);
         }
+        if Self::is_empty(source) {
+            return Self::Empty(source);
+        }
         Self::NonePrincipal(source)
     }
     pub fn is_flat(source: &'a str) -> bool {
-        source.chars().all(|c| c.is_lowercase())
+        !Self::is_empty(source) && source.chars().all(|c| c.is_lowercase())
     }
     pub fn is_chain(source: &'a str) -> bool {
-        source
-            .chars()
-            .all(|c| c == '-' || c != '_' && c.is_lowercase())
+        !Self::is_empty(source)
+            && source
+                .chars()
+                .all(|c| c == '-' || c != '_' && c.is_lowercase())
     }
     pub fn is_constant(source: &'a str) -> bool {
-        source
-            .chars()
-            .all(|c| c == '_' || c != '-' && c.is_uppercase())
+        !Self::is_empty(source)
+            && source
+                .chars()
+                .all(|c| c == '_' || c != '-' && c.is_uppercase())
     }
     pub fn is_snake(source: &'a str) -> bool {
-        source
-            .chars()
-            .all(|c| c == '_' || c != '-' && c.is_lowercase())
+        !Self::is_empty(source)
+            && source
+                .chars()
+                .all(|c| c == '_' || c != '-' && c.is_lowercase())
     }
     pub fn is_pascal(source: &'a str) -> bool {
-        if source.contains("_") {
+        if Self::is_empty(source) || source.contains("_") || source.contains("-") {
             return false;
         }
         let first = source.chars().next().unwrap();
@@ -76,7 +83,7 @@ impl<'a> NamingPrincipal<'a> {
         !source.chars().all(|c| c.is_uppercase())
     }
     pub fn is_camel(source: &'a str) -> bool {
-        if source.contains("_") || source.contains("-") {
+        if Self::is_empty(source) || source.contains("_") || source.contains("-") {
             return false;
         }
         if let Some(first) = source.chars().next() {
@@ -85,13 +92,16 @@ impl<'a> NamingPrincipal<'a> {
             false
         }
     }
+    pub fn is_empty(source: &'a str) -> bool {
+        source.len() == 0
+    }
 }
 
 #[cfg(test)]
 mod test_naming_principal {
     use super::*;
-    const FLATCASE1: &'static str = "flatcase";
-    const FLATCASE2: &'static str = "";
+    const FLATCASE: &'static str = "flatcase";
+    const EMPTYCASE: &'static str = "";
     const SNAKE_CASE1: &'static str = "snake_case";
     const SNAKE_CASE2: &'static str = "_snake_case";
     const CAMEL_CASE: &'static str = "camelCase";
@@ -103,8 +113,8 @@ mod test_naming_principal {
 
     #[test]
     fn test_is_flat_and_new_flat() {
-        assert!(NamingPrincipal::is_flat(FLATCASE1));
-        assert!(NamingPrincipal::is_flat(FLATCASE2));
+        assert!(NamingPrincipal::is_flat(FLATCASE));
+        assert!(!NamingPrincipal::is_flat(EMPTYCASE));
         assert!(!NamingPrincipal::is_flat(CHAIN_CASE1));
         assert!(!NamingPrincipal::is_flat(CHAIN_CASE2));
         assert!(!NamingPrincipal::is_flat(SNAKE_CASE1));
@@ -113,17 +123,15 @@ mod test_naming_principal {
         assert!(!NamingPrincipal::is_flat(CAMEL_CASE));
         assert!(!NamingPrincipal::is_flat(CONSTANT_CASE1));
         assert!(!NamingPrincipal::is_flat(CONSTANT_CASE2));
-        let np = NamingPrincipal::new(FLATCASE1);
-        assert_eq!(np, NamingPrincipal::Flat(FLATCASE1));
-        let np = NamingPrincipal::new(FLATCASE2);
-        assert_eq!(np, NamingPrincipal::Flat(FLATCASE2));
+        let np = NamingPrincipal::new(FLATCASE);
+        assert_eq!(np, NamingPrincipal::Flat(FLATCASE));
     }
     #[test]
     fn test_is_chain_and_new_chain() {
         assert!(NamingPrincipal::is_chain(CHAIN_CASE1));
         assert!(NamingPrincipal::is_chain(CHAIN_CASE2));
-        assert!(NamingPrincipal::is_chain(FLATCASE1));
-        assert!(NamingPrincipal::is_chain(FLATCASE2));
+        assert!(NamingPrincipal::is_chain(FLATCASE));
+        assert!(!NamingPrincipal::is_chain(EMPTYCASE));
         assert!(!NamingPrincipal::is_chain(SNAKE_CASE1));
         assert!(!NamingPrincipal::is_chain(SNAKE_CASE2));
         assert!(!NamingPrincipal::is_chain(PASCAL_CASE));
@@ -137,20 +145,20 @@ mod test_naming_principal {
     }
     #[test]
     fn test_is_constant_and_new_constant() {
-        let source = "CONSTANT_CASE";
-        assert!(NamingPrincipal::is_constant(source));
-        let np = NamingPrincipal::new(source);
-        assert_eq!(np, NamingPrincipal::Constant(source));
-        let source = "AWS";
-        assert!(NamingPrincipal::is_constant(source));
-        let np = NamingPrincipal::new(source);
-        assert_eq!(np, NamingPrincipal::Constant(source));
-        let source = "PascalCase";
-        assert!(!NamingPrincipal::is_constant(source));
-        let source = "snake_case";
-        assert!(!NamingPrincipal::is_constant(source));
-        let source = "chain-case";
-        assert!(!NamingPrincipal::is_constant(source));
+        assert!(NamingPrincipal::is_constant(CONSTANT_CASE1));
+        assert!(NamingPrincipal::is_constant(CONSTANT_CASE2));
+        assert!(!NamingPrincipal::is_constant(CHAIN_CASE1));
+        assert!(!NamingPrincipal::is_constant(CHAIN_CASE2));
+        assert!(!NamingPrincipal::is_constant(FLATCASE));
+        assert!(!NamingPrincipal::is_constant(EMPTYCASE));
+        assert!(!NamingPrincipal::is_constant(SNAKE_CASE1));
+        assert!(!NamingPrincipal::is_constant(SNAKE_CASE2));
+        assert!(!NamingPrincipal::is_constant(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_constant(CAMEL_CASE));
+        let np = NamingPrincipal::new(CONSTANT_CASE1);
+        assert_eq!(np, NamingPrincipal::Constant(CONSTANT_CASE1));
+        let np = NamingPrincipal::new(CONSTANT_CASE2);
+        assert_eq!(np, NamingPrincipal::Constant(CONSTANT_CASE2));
     }
     #[test]
     fn test_is_snake_and_new_snake() {
