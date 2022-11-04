@@ -34,7 +34,10 @@ impl<'a> NamingPrincipal<'a> {
         if Self::is_empty(source) {
             return Self::Empty(source);
         }
-        Self::NonPrincipal(source)
+        if Self::is_non_principal(source) {
+            return Self::NonPrincipal(source);
+        }
+        panic!("not considering case! have to impl case {}", source)
     }
     pub fn is_non_principal(source: &'a str) -> bool {
         !(Self::is_flat(source)

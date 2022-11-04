@@ -13,6 +13,44 @@ impl<'a> NamingPrincipalConvertor<'a> {
             principal: NamingPrincipal::new(source),
         }
     }
+    pub fn to_chain(&self) -> String {
+        match self.principal {
+            NamingPrincipal::Snake(snake) => snake.replace("_", "-"),
+            NamingPrincipal::Camel(camel) => camel.chars().fold(String::new(), |mut acc, c| {
+                Self::upper_to_partition(&mut acc, c, '-');
+                acc
+            }),
+            NamingPrincipal::Constant(constant) => constant
+                .chars()
+                .map(|c| {
+                    if c == '_' {
+                        '-'
+                    } else {
+                        c.to_ascii_lowercase()
+                    }
+                })
+                .collect(),
+            NamingPrincipal::Pascal(pascal) => {
+                pascal
+                    .chars()
+                    .enumerate()
+                    .fold(String::new(), |mut acc, (i, cur)| {
+                        if i == 0 {
+                            acc.push(cur.to_ascii_lowercase());
+                            return acc;
+                        }
+                        Self::upper_to_partition(&mut acc, cur, '-');
+                        acc
+                    })
+            }
+            NamingPrincipal::NonPrincipal(_) => {
+                let snake = self.to_snake();
+                let np = NamingPrincipalConvertor::new(&snake);
+                np.to_chain()
+            }
+            _ => self.original.to_string(),
+        }
+    }
     pub fn to_constant(&self) -> String {
         match self.principal {
             NamingPrincipal::Snake(snake) => {
@@ -118,7 +156,7 @@ impl<'a> NamingPrincipalConvertor<'a> {
     pub fn to_snake(&self) -> String {
         match self.principal {
             NamingPrincipal::Camel(camel) => camel.chars().fold(String::new(), |mut acc, cur| {
-                Self::upper_to_snake(&mut acc, cur);
+                Self::upper_to_partition(&mut acc, cur, '_');
                 acc
             }),
             NamingPrincipal::Pascal(pascal) => {
@@ -130,7 +168,7 @@ impl<'a> NamingPrincipalConvertor<'a> {
                             acc.push(cur.to_ascii_lowercase());
                             return acc;
                         }
-                        Self::upper_to_snake(&mut acc, cur);
+                        Self::upper_to_partition(&mut acc, cur, '_');
                         acc
                     })
             }
@@ -138,15 +176,7 @@ impl<'a> NamingPrincipalConvertor<'a> {
                 .chars()
                 .map(|c| c.to_ascii_lowercase())
                 .collect::<String>(),
-            NamingPrincipal::Chain(chain) => chain
-                .chars()
-                .map(|c| {
-                    if c == '-' {
-                        return '_';
-                    }
-                    c
-                })
-                .collect::<String>(),
+            NamingPrincipal::Chain(chain) => chain.replace("-", "_"),
             NamingPrincipal::NonPrincipal(non_principal) => {
                 non_principal
                     .chars()
@@ -172,16 +202,16 @@ impl<'a> NamingPrincipalConvertor<'a> {
                             acc.push('_');
                             return acc;
                         }
-                        Self::upper_to_snake(&mut acc, cur);
+                        Self::upper_to_partition(&mut acc, cur, '_');
                         acc
                     })
             }
             _ => self.original.to_string(),
         }
     }
-    fn upper_to_snake(acc: &mut String, c: char) {
+    fn upper_to_partition(acc: &mut String, c: char, partition: char) {
         if c.is_uppercase() {
-            acc.push('_');
+            acc.push(partition);
             acc.push(c.to_ascii_lowercase());
         } else {
             acc.push(c);
@@ -241,6 +271,37 @@ impl<'a> NamingPrincipalConvertor<'a> {
 mod test_convertor {
     use super::*;
     use crate::naming_principal::naming_principal_test_data::*;
+    #[test]
+    fn test_to_chain() {
+        let convertor = NamingPrincipalConvertor::new(FLATCASE);
+        assert_eq!(convertor.to_chain(), "flatcase".to_string());
+        let convertor = NamingPrincipalConvertor::new(EMPTYCASE);
+        assert_eq!(convertor.to_chain(), "".to_string());
+        let convertor = NamingPrincipalConvertor::new(SNAKE_CASE1);
+        assert_eq!(convertor.to_chain(), "snake-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(SNAKE_CASE2);
+        assert_eq!(convertor.to_chain(), "-snake-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CAMEL_CASE);
+        assert_eq!(convertor.to_chain(), "camel-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE1);
+        assert_eq!(convertor.to_chain(), "constant-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE2);
+        assert_eq!(convertor.to_chain(), "constant".to_string());
+        let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE3);
+        assert_eq!(convertor.to_chain(), "-constant-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(PASCAL_CASE1);
+        assert_eq!(convertor.to_chain(), "pascal-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(PASCAL_CASE2);
+        assert_eq!(convertor.to_chain(), "a-b-c-data".to_string());
+        let convertor = NamingPrincipalConvertor::new(CHAIN_CASE1);
+        assert_eq!(convertor.to_chain(), "chain-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CHAIN_CASE2);
+        assert_eq!(convertor.to_chain(), "-chain-case".to_string());
+        let convertor = NamingPrincipalConvertor::new(NONPRINCIPAL_CASE1);
+        assert_eq!(convertor.to_chain(), "a-data".to_string());
+        let convertor = NamingPrincipalConvertor::new(NONPRINCIPAL_CASE2);
+        assert_eq!(convertor.to_chain(), "a-b-c-data-".to_string());
+    }
     #[test]
     fn test_to_constant() {
         let convertor = NamingPrincipalConvertor::new(FLATCASE);
