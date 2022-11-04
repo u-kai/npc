@@ -16,7 +16,7 @@ impl<'a> NamingPrincipalConvertor<'a> {
 #[derive(Debug, PartialEq, Eq, Clone)]
 enum NamingPrincipal<'a> {
     Snake(&'a str),
-    ConstantCase(&'a str),
+    Constant(&'a str),
     Camel(&'a str),
     Pascal(&'a str),
     Chain(&'a str),
@@ -34,7 +34,15 @@ impl<'a> NamingPrincipal<'a> {
         if Self::is_snake(source) {
             return Self::Snake(source);
         }
+        if Self::is_constant(source) {
+            return Self::Constant(source);
+        }
         Self::Flat(source)
+    }
+    pub fn is_constant(source: &'a str) -> bool {
+        source
+            .chars()
+            .all(|c| c == '_' || c != '-' && c.is_uppercase())
     }
     pub fn is_snake(source: &'a str) -> bool {
         source
@@ -66,6 +74,23 @@ impl<'a> NamingPrincipal<'a> {
 #[cfg(test)]
 mod test_naming_principal {
     use super::*;
+    #[test]
+    fn test_is_constant_and_new_constant() {
+        let source = "CONSTANT_CASE";
+        assert!(NamingPrincipal::is_constant(source));
+        let np = NamingPrincipal::new(source);
+        assert_eq!(np, NamingPrincipal::Constant(source));
+        let source = "AWS";
+        assert!(NamingPrincipal::is_constant(source));
+        let np = NamingPrincipal::new(source);
+        assert_eq!(np, NamingPrincipal::Constant(source));
+        let source = "PascalCase";
+        assert!(!NamingPrincipal::is_constant(source));
+        let source = "snake_case";
+        assert!(!NamingPrincipal::is_constant(source));
+        let source = "chain-case";
+        assert!(!NamingPrincipal::is_constant(source));
+    }
     #[test]
     fn test_is_snake_and_new_snake() {
         let source = "snake_case";
