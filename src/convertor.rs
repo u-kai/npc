@@ -53,6 +53,35 @@ impl<'a> NamingPrincipalConvertor<'a> {
                     c
                 })
                 .collect::<String>(),
+            NamingPrincipal::NonPrincipal(non_principal) => {
+                non_principal
+                    .chars()
+                    .enumerate()
+                    .fold(String::new(), |mut acc, (i, cur)| {
+                        if i == 0 && cur.is_uppercase() {
+                            acc.push(cur.to_ascii_lowercase());
+                            return acc;
+                        }
+                        if cur == '-' {
+                            // case - before upper
+                            // ex: A-D
+                            // if not impl below process
+                            // tobe a__d
+                            if let Some(Some(next_char)) = non_principal
+                                .get(i + 1..i + 2)
+                                .map(|str| str.chars().next())
+                            {
+                                if next_char.is_uppercase() {
+                                    return acc;
+                                }
+                            }
+                            acc.push('_');
+                            return acc;
+                        }
+                        upper_to_snake(&mut acc, cur);
+                        acc
+                    })
+            }
             _ => self.original.to_string(),
         }
     }
@@ -87,5 +116,9 @@ mod test_convertor {
         assert_eq!(convertor.to_snake(), "chain_case".to_string());
         let convertor = NamingPrincipalConvertor::new(CHAIN_CASE2);
         assert_eq!(convertor.to_snake(), "_chain_case".to_string());
+        let convertor = NamingPrincipalConvertor::new(NONPRINCIPAL_CASE1);
+        assert_eq!(convertor.to_snake(), "a_data".to_string());
+        let convertor = NamingPrincipalConvertor::new(NONPRINCIPAL_CASE2);
+        assert_eq!(convertor.to_snake(), "a_b_c_data_".to_string());
     }
 }
