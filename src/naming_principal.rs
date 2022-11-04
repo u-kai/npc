@@ -26,7 +26,7 @@ enum NamingPrincipal<'a> {
 
 impl<'a> NamingPrincipal<'a> {
     pub fn new(source: &'a str) -> Self {
-        //flat containe camel and snake that's why is_flat is position top
+        //flat containe camel and snake and chain that's why is_flat is position top
         if Self::is_flat(source) {
             return Self::Flat(source);
         }
@@ -105,6 +105,8 @@ mod test_naming_principal {
     fn test_is_flat_and_new_flat() {
         assert!(NamingPrincipal::is_flat(FLATCASE1));
         assert!(NamingPrincipal::is_flat(FLATCASE2));
+        assert!(!NamingPrincipal::is_flat(CHAIN_CASE1));
+        assert!(!NamingPrincipal::is_flat(CHAIN_CASE2));
         assert!(!NamingPrincipal::is_flat(SNAKE_CASE1));
         assert!(!NamingPrincipal::is_flat(SNAKE_CASE2));
         assert!(!NamingPrincipal::is_flat(PASCAL_CASE));
@@ -118,12 +120,20 @@ mod test_naming_principal {
     }
     #[test]
     fn test_is_chain_and_new_chain() {
-        let source = "chain-case";
-        assert!(NamingPrincipal::is_chain(source));
-        let np = NamingPrincipal::new(source);
-        assert_eq!(np, NamingPrincipal::Chain(source));
-        let source = "snake_case";
-        assert!(!NamingPrincipal::is_chain(source));
+        assert!(NamingPrincipal::is_chain(CHAIN_CASE1));
+        assert!(NamingPrincipal::is_chain(CHAIN_CASE2));
+        assert!(NamingPrincipal::is_chain(FLATCASE1));
+        assert!(NamingPrincipal::is_chain(FLATCASE2));
+        assert!(!NamingPrincipal::is_chain(SNAKE_CASE1));
+        assert!(!NamingPrincipal::is_chain(SNAKE_CASE2));
+        assert!(!NamingPrincipal::is_chain(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_chain(CAMEL_CASE));
+        assert!(!NamingPrincipal::is_chain(CONSTANT_CASE1));
+        assert!(!NamingPrincipal::is_chain(CONSTANT_CASE2));
+        let np = NamingPrincipal::new(CHAIN_CASE1);
+        assert_eq!(np, NamingPrincipal::Chain(CHAIN_CASE1));
+        let np = NamingPrincipal::new(CHAIN_CASE2);
+        assert_eq!(np, NamingPrincipal::Chain(CHAIN_CASE2));
     }
     #[test]
     fn test_is_constant_and_new_constant() {
