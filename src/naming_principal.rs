@@ -102,6 +102,7 @@ pub(super) mod naming_principal_test_data {
     pub const PASCAL_CASE2: &'static str = "ABCData";
     pub const CONSTANT_CASE1: &'static str = "CONSTANT_CASE";
     pub const CONSTANT_CASE2: &'static str = "CONSTANT";
+    pub const CONSTANT_CASE3: &'static str = "_CONSTANT_CASE";
     pub const CHAIN_CASE1: &'static str = "chain-case";
     pub const CHAIN_CASE2: &'static str = "-chain-case";
     pub const NONPRINCIPAL_CASE1: &'static str = "A_data";
@@ -173,6 +174,7 @@ mod test_naming_principal {
     fn test_is_constant_and_new_constant() {
         assert!(NamingPrincipal::is_constant(CONSTANT_CASE1));
         assert!(NamingPrincipal::is_constant(CONSTANT_CASE2));
+        assert!(NamingPrincipal::is_constant(CONSTANT_CASE3));
         assert!(!NamingPrincipal::is_constant(CHAIN_CASE1));
         assert!(!NamingPrincipal::is_constant(CHAIN_CASE2));
         assert!(!NamingPrincipal::is_constant(FLATCASE));
@@ -188,6 +190,8 @@ mod test_naming_principal {
         assert_eq!(np, NamingPrincipal::Constant(CONSTANT_CASE1));
         let np = NamingPrincipal::new(CONSTANT_CASE2);
         assert_eq!(np, NamingPrincipal::Constant(CONSTANT_CASE2));
+        let np = NamingPrincipal::new(CONSTANT_CASE3);
+        assert_eq!(np, NamingPrincipal::Constant(CONSTANT_CASE3));
     }
     #[test]
     fn test_is_snake_and_new_snake() {
