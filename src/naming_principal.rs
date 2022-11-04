@@ -105,12 +105,14 @@ mod test_naming_principal {
     const SNAKE_CASE1: &'static str = "snake_case";
     const SNAKE_CASE2: &'static str = "_snake_case";
     const CAMEL_CASE: &'static str = "camelCase";
-    const PASCAL_CASE: &'static str = "PascalCase";
+    const PASCAL_CASE1: &'static str = "PascalCase";
+    const PASCAL_CASE2: &'static str = "ABCData";
     const CONSTANT_CASE1: &'static str = "CONSTANT_CASE";
     const CONSTANT_CASE2: &'static str = "CONSTANT";
     const CHAIN_CASE1: &'static str = "chain-case";
     const CHAIN_CASE2: &'static str = "-chain-case";
-
+    const NONPRINCIPAL_CASE1: &'static str = "A_data";
+    const NONPRINCIPAL_CASE2: &'static str = "ABC-Data_";
     #[test]
     fn test_is_flat_and_new_flat() {
         assert!(NamingPrincipal::is_flat(FLATCASE));
@@ -119,7 +121,8 @@ mod test_naming_principal {
         assert!(!NamingPrincipal::is_flat(CHAIN_CASE2));
         assert!(!NamingPrincipal::is_flat(SNAKE_CASE1));
         assert!(!NamingPrincipal::is_flat(SNAKE_CASE2));
-        assert!(!NamingPrincipal::is_flat(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_flat(PASCAL_CASE1));
+        assert!(!NamingPrincipal::is_flat(PASCAL_CASE2));
         assert!(!NamingPrincipal::is_flat(CAMEL_CASE));
         assert!(!NamingPrincipal::is_flat(CONSTANT_CASE1));
         assert!(!NamingPrincipal::is_flat(CONSTANT_CASE2));
@@ -134,7 +137,8 @@ mod test_naming_principal {
         assert!(!NamingPrincipal::is_chain(EMPTYCASE));
         assert!(!NamingPrincipal::is_chain(SNAKE_CASE1));
         assert!(!NamingPrincipal::is_chain(SNAKE_CASE2));
-        assert!(!NamingPrincipal::is_chain(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_chain(PASCAL_CASE1));
+        assert!(!NamingPrincipal::is_chain(PASCAL_CASE2));
         assert!(!NamingPrincipal::is_chain(CAMEL_CASE));
         assert!(!NamingPrincipal::is_chain(CONSTANT_CASE1));
         assert!(!NamingPrincipal::is_chain(CONSTANT_CASE2));
@@ -153,7 +157,8 @@ mod test_naming_principal {
         assert!(!NamingPrincipal::is_constant(EMPTYCASE));
         assert!(!NamingPrincipal::is_constant(SNAKE_CASE1));
         assert!(!NamingPrincipal::is_constant(SNAKE_CASE2));
-        assert!(!NamingPrincipal::is_constant(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_constant(PASCAL_CASE1));
+        assert!(!NamingPrincipal::is_constant(PASCAL_CASE2));
         assert!(!NamingPrincipal::is_constant(CAMEL_CASE));
         let np = NamingPrincipal::new(CONSTANT_CASE1);
         assert_eq!(np, NamingPrincipal::Constant(CONSTANT_CASE1));
@@ -168,7 +173,8 @@ mod test_naming_principal {
         assert!(!NamingPrincipal::is_snake(CHAIN_CASE1));
         assert!(!NamingPrincipal::is_snake(CHAIN_CASE2));
         assert!(!NamingPrincipal::is_snake(EMPTYCASE));
-        assert!(!NamingPrincipal::is_snake(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_snake(PASCAL_CASE1));
+        assert!(!NamingPrincipal::is_snake(PASCAL_CASE2));
         assert!(!NamingPrincipal::is_snake(CAMEL_CASE));
         assert!(!NamingPrincipal::is_snake(CONSTANT_CASE1));
         assert!(!NamingPrincipal::is_snake(CONSTANT_CASE2));
@@ -179,7 +185,8 @@ mod test_naming_principal {
     }
     #[test]
     fn test_is_pascal_and_new_pascal() {
-        assert!(NamingPrincipal::is_pascal(PASCAL_CASE));
+        assert!(NamingPrincipal::is_pascal(PASCAL_CASE1));
+        assert!(NamingPrincipal::is_pascal(PASCAL_CASE2));
         assert!(!NamingPrincipal::is_pascal(FLATCASE));
         assert!(!NamingPrincipal::is_pascal(CHAIN_CASE1));
         assert!(!NamingPrincipal::is_pascal(CHAIN_CASE2));
@@ -189,16 +196,25 @@ mod test_naming_principal {
         assert!(!NamingPrincipal::is_pascal(CAMEL_CASE));
         assert!(!NamingPrincipal::is_pascal(CONSTANT_CASE1));
         assert!(!NamingPrincipal::is_pascal(CONSTANT_CASE2));
-        let np = NamingPrincipal::new(PASCAL_CASE);
-        assert_eq!(np, NamingPrincipal::Pascal(PASCAL_CASE));
+        let np = NamingPrincipal::new(PASCAL_CASE1);
+        assert_eq!(np, NamingPrincipal::Pascal(PASCAL_CASE1));
+        let np = NamingPrincipal::new(PASCAL_CASE2);
+        assert_eq!(np, NamingPrincipal::Pascal(PASCAL_CASE2));
     }
     #[test]
     fn test_is_camel_and_new_camel() {
-        let source = "camelCase";
-        assert!(NamingPrincipal::is_camel(source));
-        let np = NamingPrincipal::new(source);
-        assert_eq!(np, NamingPrincipal::Camel(source));
-        let source = "snake_case";
-        assert!(!NamingPrincipal::is_camel(source));
+        assert!(NamingPrincipal::is_camel(CAMEL_CASE));
+        assert!(NamingPrincipal::is_camel(FLATCASE));
+        assert!(!NamingPrincipal::is_camel(PASCAL_CASE1));
+        assert!(!NamingPrincipal::is_camel(PASCAL_CASE2));
+        assert!(!NamingPrincipal::is_camel(CHAIN_CASE1));
+        assert!(!NamingPrincipal::is_camel(CHAIN_CASE2));
+        assert!(!NamingPrincipal::is_camel(EMPTYCASE));
+        assert!(!NamingPrincipal::is_camel(SNAKE_CASE1));
+        assert!(!NamingPrincipal::is_camel(SNAKE_CASE2));
+        assert!(!NamingPrincipal::is_camel(CONSTANT_CASE1));
+        assert!(!NamingPrincipal::is_camel(CONSTANT_CASE2));
+        let np = NamingPrincipal::new(CAMEL_CASE);
+        assert_eq!(np, NamingPrincipal::Camel(CAMEL_CASE));
     }
 }
