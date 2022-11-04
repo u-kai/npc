@@ -90,14 +90,31 @@ impl<'a> NamingPrincipal<'a> {
 #[cfg(test)]
 mod test_naming_principal {
     use super::*;
+    const FLATCASE1: &'static str = "flatcase";
+    const FLATCASE2: &'static str = "";
+    const SNAKE_CASE1: &'static str = "snake_case";
+    const SNAKE_CASE2: &'static str = "_snake_case";
+    const CAMEL_CASE: &'static str = "camelCase";
+    const PASCAL_CASE: &'static str = "PascalCase";
+    const CONSTANT_CASE1: &'static str = "CONSTANT_CASE";
+    const CONSTANT_CASE2: &'static str = "CONSTANT";
+    const CHAIN_CASE1: &'static str = "chain-case";
+    const CHAIN_CASE2: &'static str = "-chain-case";
+
     #[test]
     fn test_is_flat_and_new_flat() {
-        let source = "flatcase";
-        assert!(NamingPrincipal::is_flat(source));
-        let np = NamingPrincipal::new(source);
-        assert_eq!(np, NamingPrincipal::Flat(source));
-        let source = "snake_case";
-        assert!(!NamingPrincipal::is_flat(source));
+        assert!(NamingPrincipal::is_flat(FLATCASE1));
+        assert!(NamingPrincipal::is_flat(FLATCASE2));
+        assert!(!NamingPrincipal::is_flat(SNAKE_CASE1));
+        assert!(!NamingPrincipal::is_flat(SNAKE_CASE2));
+        assert!(!NamingPrincipal::is_flat(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_flat(CAMEL_CASE));
+        assert!(!NamingPrincipal::is_flat(CONSTANT_CASE1));
+        assert!(!NamingPrincipal::is_flat(CONSTANT_CASE2));
+        let np = NamingPrincipal::new(FLATCASE1);
+        assert_eq!(np, NamingPrincipal::Flat(FLATCASE1));
+        let np = NamingPrincipal::new(FLATCASE2);
+        assert_eq!(np, NamingPrincipal::Flat(FLATCASE2));
     }
     #[test]
     fn test_is_chain_and_new_chain() {
