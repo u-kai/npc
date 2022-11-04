@@ -14,3 +14,12 @@ impl<'a> NamingPrincipalConvertor<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod test_convertor {
+    use super::*;
+    use crate::naming_principal::naming_principal_test_data;
+
+    #[test]
+    fn test_to_snake() {}
+}

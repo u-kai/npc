@@ -92,21 +92,25 @@ impl<'a> NamingPrincipal<'a> {
 }
 
 #[cfg(test)]
+pub(super) mod naming_principal_test_data {
+    pub const FLATCASE: &'static str = "flatcase";
+    pub const EMPTYCASE: &'static str = "";
+    pub const SNAKE_CASE1: &'static str = "snake_case";
+    pub const SNAKE_CASE2: &'static str = "_snake_case";
+    pub const CAMEL_CASE: &'static str = "camelCase";
+    pub const PASCAL_CASE1: &'static str = "PascalCase";
+    pub const PASCAL_CASE2: &'static str = "ABCData";
+    pub const CONSTANT_CASE1: &'static str = "CONSTANT_CASE";
+    pub const CONSTANT_CASE2: &'static str = "CONSTANT";
+    pub const CHAIN_CASE1: &'static str = "chain-case";
+    pub const CHAIN_CASE2: &'static str = "-chain-case";
+    pub const NONPRINCIPAL_CASE1: &'static str = "A_data";
+    pub const NONPRINCIPAL_CASE2: &'static str = "ABC-Data_";
+}
+#[cfg(test)]
 mod test_naming_principal {
     use super::*;
-    const FLATCASE: &'static str = "flatcase";
-    const EMPTYCASE: &'static str = "";
-    const SNAKE_CASE1: &'static str = "snake_case";
-    const SNAKE_CASE2: &'static str = "_snake_case";
-    const CAMEL_CASE: &'static str = "camelCase";
-    const PASCAL_CASE1: &'static str = "PascalCase";
-    const PASCAL_CASE2: &'static str = "ABCData";
-    const CONSTANT_CASE1: &'static str = "CONSTANT_CASE";
-    const CONSTANT_CASE2: &'static str = "CONSTANT";
-    const CHAIN_CASE1: &'static str = "chain-case";
-    const CHAIN_CASE2: &'static str = "-chain-case";
-    const NONPRINCIPAL_CASE1: &'static str = "A_data";
-    const NONPRINCIPAL_CASE2: &'static str = "ABC-Data_";
+    use naming_principal_test_data::*;
     #[test]
     fn test_is_nonprincipal_and_new_nonprincipal() {
         assert!(NamingPrincipal::is_non_principal(NONPRINCIPAL_CASE1));
