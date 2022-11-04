@@ -31,7 +31,15 @@ impl<'a> NamingPrincipal<'a> {
         if Self::is_pascal(source) {
             return Self::Pascal(source);
         }
+        if Self::is_snake(source) {
+            return Self::Snake(source);
+        }
         Self::Flat(source)
+    }
+    pub fn is_snake(source: &'a str) -> bool {
+        source
+            .chars()
+            .all(|c| c == '_' || c != '-' && c.is_lowercase())
     }
     pub fn is_pascal(source: &'a str) -> bool {
         if source.contains("_") {
@@ -59,12 +67,27 @@ impl<'a> NamingPrincipal<'a> {
 mod test_naming_principal {
     use super::*;
     #[test]
+    fn test_is_snake_and_new_snake() {
+        let source = "snake_case";
+        assert!(NamingPrincipal::is_snake(source));
+        let np = NamingPrincipal::new(source);
+        assert_eq!(np, NamingPrincipal::Snake(source));
+        let source = "PascalCase";
+        assert!(!NamingPrincipal::is_snake(source));
+        let source = "CONSTANT_CASE";
+        assert!(!NamingPrincipal::is_snake(source));
+        let source = "chain-case";
+        assert!(!NamingPrincipal::is_snake(source));
+    }
+    #[test]
     fn test_is_pascal_and_new_pascal() {
         let source = "PascalCase";
         assert!(NamingPrincipal::is_pascal(source));
         let np = NamingPrincipal::new(source);
         assert_eq!(np, NamingPrincipal::Pascal(source));
         let source = "snake_case";
+        assert!(!NamingPrincipal::is_pascal(source));
+        let source = "CONSTANT_CASE";
         assert!(!NamingPrincipal::is_pascal(source));
     }
     #[test]
