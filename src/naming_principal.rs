@@ -21,10 +21,15 @@ enum NamingPrincipal<'a> {
     Pascal(&'a str),
     Chain(&'a str),
     Flat(&'a str),
+    NonePrincipal(&'a str),
 }
 
 impl<'a> NamingPrincipal<'a> {
     pub fn new(source: &'a str) -> Self {
+        //flat containe camel and snake that's why is_flat is position top
+        if Self::is_flat(source) {
+            return Self::Flat(source);
+        }
         if Self::is_camel(source) {
             return Self::Camel(source);
         }
@@ -40,7 +45,10 @@ impl<'a> NamingPrincipal<'a> {
         if Self::is_chain(source) {
             return Self::Chain(source);
         }
-        Self::Flat(source)
+        Self::NonePrincipal(source)
+    }
+    pub fn is_flat(source: &'a str) -> bool {
+        source.chars().all(|c| c.is_lowercase())
     }
     pub fn is_chain(source: &'a str) -> bool {
         source
@@ -82,6 +90,15 @@ impl<'a> NamingPrincipal<'a> {
 #[cfg(test)]
 mod test_naming_principal {
     use super::*;
+    #[test]
+    fn test_is_flat_and_new_flat() {
+        let source = "flatcase";
+        assert!(NamingPrincipal::is_flat(source));
+        let np = NamingPrincipal::new(source);
+        assert_eq!(np, NamingPrincipal::Flat(source));
+        let source = "snake_case";
+        assert!(!NamingPrincipal::is_flat(source));
+    }
     #[test]
     fn test_is_chain_and_new_chain() {
         let source = "chain-case";
