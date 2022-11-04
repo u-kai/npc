@@ -179,14 +179,18 @@ mod test_naming_principal {
     }
     #[test]
     fn test_is_pascal_and_new_pascal() {
-        let source = "PascalCase";
-        assert!(NamingPrincipal::is_pascal(source));
-        let np = NamingPrincipal::new(source);
-        assert_eq!(np, NamingPrincipal::Pascal(source));
-        let source = "snake_case";
-        assert!(!NamingPrincipal::is_pascal(source));
-        let source = "CONSTANT_CASE";
-        assert!(!NamingPrincipal::is_pascal(source));
+        assert!(NamingPrincipal::is_pascal(PASCAL_CASE));
+        assert!(!NamingPrincipal::is_pascal(FLATCASE));
+        assert!(!NamingPrincipal::is_pascal(CHAIN_CASE1));
+        assert!(!NamingPrincipal::is_pascal(CHAIN_CASE2));
+        assert!(!NamingPrincipal::is_pascal(EMPTYCASE));
+        assert!(!NamingPrincipal::is_pascal(SNAKE_CASE1));
+        assert!(!NamingPrincipal::is_pascal(SNAKE_CASE2));
+        assert!(!NamingPrincipal::is_pascal(CAMEL_CASE));
+        assert!(!NamingPrincipal::is_pascal(CONSTANT_CASE1));
+        assert!(!NamingPrincipal::is_pascal(CONSTANT_CASE2));
+        let np = NamingPrincipal::new(PASCAL_CASE);
+        assert_eq!(np, NamingPrincipal::Pascal(PASCAL_CASE));
     }
     #[test]
     fn test_is_camel_and_new_camel() {
