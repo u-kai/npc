@@ -1,20 +1,5 @@
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct NamingPrincipalConvertor<'a> {
-    original: &'a str,
-    value: NamingPrincipal<'a>,
-}
-
-impl<'a> NamingPrincipalConvertor<'a> {
-    pub fn new(source: &'a str) -> Self {
-        Self {
-            original: source,
-            value: NamingPrincipal::new(source),
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-enum NamingPrincipal<'a> {
+pub(super) enum NamingPrincipal<'a> {
     Snake(&'a str),
     Constant(&'a str),
     Camel(&'a str),
