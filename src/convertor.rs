@@ -13,6 +13,40 @@ impl<'a> NamingPrincipalConvertor<'a> {
             principal: NamingPrincipal::new(source),
         }
     }
+    pub fn to_constant(&self) -> String {
+        match self.principal {
+            NamingPrincipal::Snake(snake) => {
+                snake.chars().map(|c| c.to_ascii_uppercase()).collect()
+            }
+            NamingPrincipal::Chain(chain) => chain
+                .chars()
+                .map(|c| {
+                    if c == '-' {
+                        '_'
+                    } else {
+                        c.to_ascii_uppercase()
+                    }
+                })
+                .collect(),
+            NamingPrincipal::Flat(flat) => flat.chars().map(|c| c.to_ascii_uppercase()).collect(),
+            NamingPrincipal::Camel(_) => {
+                let snake = self.to_snake();
+                let np = NamingPrincipalConvertor::new(&snake);
+                np.to_constant()
+            }
+            NamingPrincipal::Pascal(_) => {
+                let snake = self.to_snake();
+                let np = NamingPrincipalConvertor::new(&snake);
+                np.to_constant()
+            }
+            NamingPrincipal::NonPrincipal(_) => {
+                let snake = self.to_snake();
+                let np = NamingPrincipalConvertor::new(&snake);
+                np.to_constant()
+            }
+            _ => self.original.to_string(),
+        }
+    }
     pub fn to_pascal(&self) -> String {
         match self.principal {
             NamingPrincipal::Snake(snake) => Self::split_case_to_pascal(snake, '_'),
@@ -207,6 +241,37 @@ impl<'a> NamingPrincipalConvertor<'a> {
 mod test_convertor {
     use super::*;
     use crate::naming_principal::naming_principal_test_data::*;
+    #[test]
+    fn test_to_constant() {
+        let convertor = NamingPrincipalConvertor::new(FLATCASE);
+        assert_eq!(convertor.to_constant(), "FLATCASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(EMPTYCASE);
+        assert_eq!(convertor.to_constant(), "".to_string());
+        let convertor = NamingPrincipalConvertor::new(SNAKE_CASE1);
+        assert_eq!(convertor.to_constant(), "SNAKE_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(SNAKE_CASE2);
+        assert_eq!(convertor.to_constant(), "_SNAKE_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(CAMEL_CASE);
+        assert_eq!(convertor.to_constant(), "CAMEL_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE1);
+        assert_eq!(convertor.to_constant(), "CONSTANT_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE2);
+        assert_eq!(convertor.to_constant(), "CONSTANT".to_string());
+        let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE3);
+        assert_eq!(convertor.to_constant(), "_CONSTANT_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(PASCAL_CASE1);
+        assert_eq!(convertor.to_constant(), "PASCAL_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(PASCAL_CASE2);
+        assert_eq!(convertor.to_constant(), "A_B_C_DATA".to_string());
+        let convertor = NamingPrincipalConvertor::new(CHAIN_CASE1);
+        assert_eq!(convertor.to_constant(), "CHAIN_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(CHAIN_CASE2);
+        assert_eq!(convertor.to_constant(), "_CHAIN_CASE".to_string());
+        let convertor = NamingPrincipalConvertor::new(NONPRINCIPAL_CASE1);
+        assert_eq!(convertor.to_constant(), "A_DATA".to_string());
+        let convertor = NamingPrincipalConvertor::new(NONPRINCIPAL_CASE2);
+        assert_eq!(convertor.to_constant(), "A_B_C_DATA_".to_string());
+    }
 
     #[test]
     fn test_to_pascal() {
