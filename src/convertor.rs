@@ -44,6 +44,15 @@ impl<'a> NamingPrincipalConvertor<'a> {
                 .chars()
                 .map(|c| c.to_ascii_lowercase())
                 .collect::<String>(),
+            NamingPrincipal::Chain(chain) => chain
+                .chars()
+                .map(|c| {
+                    if c == '-' {
+                        return '_';
+                    }
+                    c
+                })
+                .collect::<String>(),
             _ => self.original.to_string(),
         }
     }
@@ -74,9 +83,9 @@ mod test_convertor {
         assert_eq!(convertor.to_snake(), "pascal_case".to_string());
         let convertor = NamingPrincipalConvertor::new(PASCAL_CASE2);
         assert_eq!(convertor.to_snake(), "a_b_c_data".to_string());
-        //let convertor = NamingPrincipalConvertor::new(CHAIN_CASE1);
-        //assert_eq!(convertor.to_snake(), "chain_case".to_string());
-        //let convertor = NamingPrincipalConvertor::new(CHAIN_CASE2);
-        //assert_eq!(convertor.to_snake(), "_chain_case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CHAIN_CASE1);
+        assert_eq!(convertor.to_snake(), "chain_case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CHAIN_CASE2);
+        assert_eq!(convertor.to_snake(), "_chain_case".to_string());
     }
 }
