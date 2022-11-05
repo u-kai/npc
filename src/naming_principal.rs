@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub(super) enum NamingPrincipal<'a> {
+pub enum NamingPrincipal<'a> {
     Snake(&'a str),
     Constant(&'a str),
     Camel(&'a str),
