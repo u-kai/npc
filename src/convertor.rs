@@ -13,6 +13,24 @@ impl<'a> NamingPrincipalConvertor<'a> {
             principal: NamingPrincipal::new(source),
         }
     }
+    pub fn is_non_principal(&self) -> bool {
+        NamingPrincipal::is_non_principal(self.original)
+    }
+    pub fn is_constant(&self) -> bool {
+        NamingPrincipal::is_constant(self.original)
+    }
+    pub fn is_chain(&self) -> bool {
+        NamingPrincipal::is_chain(self.original)
+    }
+    pub fn is_pascal(&self) -> bool {
+        NamingPrincipal::is_pascal(self.original)
+    }
+    pub fn is_snake(&self) -> bool {
+        NamingPrincipal::is_snake(self.original)
+    }
+    pub fn is_camel(&self) -> bool {
+        NamingPrincipal::is_camel(self.original)
+    }
     pub fn to_chain(&self) -> String {
         match self.principal {
             NamingPrincipal::Snake(snake) => snake.replace("_", "-"),
