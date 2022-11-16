@@ -173,10 +173,24 @@ impl<'a> NamingPrincipalConvertor<'a> {
     }
     pub fn to_snake(&self) -> String {
         match self.principal {
-            NamingPrincipal::Camel(camel) => camel.chars().fold(String::new(), |mut acc, cur| {
-                Self::upper_to_partition(&mut acc, cur, '_');
-                acc
-            }),
+            NamingPrincipal::Camel(camel) => {
+                let mut is_upper_sequence = false;
+                let mut result = String::new();
+                for c in camel.chars() {
+                    if is_upper_sequence && c.is_uppercase() {
+                        result.push(c.to_ascii_lowercase());
+                        continue;
+                    }
+                    if !is_upper_sequence && c.is_uppercase() {
+                        is_upper_sequence = true;
+                        Self::upper_to_partition(&mut result, c, '_');
+                        continue;
+                    }
+                    result.push(c);
+                    is_upper_sequence = false;
+                }
+                result
+            }
             NamingPrincipal::Pascal(pascal) => {
                 pascal
                     .chars()
@@ -426,6 +440,8 @@ mod test_convertor {
         assert_eq!(convertor.to_snake(), SNAKE_CASE2.to_string());
         let convertor = NamingPrincipalConvertor::new(CAMEL_CASE);
         assert_eq!(convertor.to_snake(), "camel_case".to_string());
+        let convertor = NamingPrincipalConvertor::new(CAMEL_CASE2);
+        assert_eq!(convertor.to_snake(), "internet_ip".to_string());
         let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE1);
         assert_eq!(convertor.to_snake(), "constant_case".to_string());
         let convertor = NamingPrincipalConvertor::new(CONSTANT_CASE2);

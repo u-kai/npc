@@ -101,6 +101,7 @@ pub(super) mod naming_principal_test_data {
     pub const SNAKE_CASE1: &'static str = "snake_case";
     pub const SNAKE_CASE2: &'static str = "_snake_case";
     pub const CAMEL_CASE: &'static str = "camelCase";
+    pub const CAMEL_CASE2: &'static str = "internetIP";
     pub const PASCAL_CASE1: &'static str = "PascalCase";
     pub const PASCAL_CASE2: &'static str = "ABCData";
     pub const CONSTANT_CASE1: &'static str = "CONSTANT_CASE";
@@ -113,6 +114,7 @@ pub(super) mod naming_principal_test_data {
 }
 #[cfg(test)]
 mod test_naming_principal {
+
     use super::*;
     use naming_principal_test_data::*;
     #[test]
