@@ -31,6 +31,9 @@ impl<'a> NamingPrincipalConvertor<'a> {
     pub fn is_camel(&self) -> bool {
         NamingPrincipal::is_camel(self.original)
     }
+    pub fn original(&self) -> &str {
+        self.original
+    }
     pub fn to_chain(&self) -> String {
         match self.principal {
             NamingPrincipal::Snake(snake) => snake.replace("_", "-"),
