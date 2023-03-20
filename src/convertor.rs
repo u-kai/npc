@@ -1,6 +1,6 @@
 use crate::naming_principal::NamingPrincipal;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Clone)]
 pub struct NamingPrincipalConvertor<'a> {
     original: &'a str,
     principal: NamingPrincipal<'a>,

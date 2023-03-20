@@ -1,5 +1,6 @@
-use std::collections::HashMap;
+use crate::fns::to_snake;
 
+#[derive(Debug, Clone)]
 pub(crate) struct ReservedPascalCaseIdentifies {
     store: Vec<String>,
 }
@@ -12,12 +13,18 @@ impl ReservedPascalCaseIdentifies {
             store: store.into_iter().map(String::from).collect(),
         }
     }
-    pub fn to_other_case(&self, target: &str) -> String {
-        if self.store.iter().any(|s| s == target) {
-            target.chars().map(|c| c.to_ascii_lowercase()).collect()
-        } else {
-            target.to_string()
+    pub fn replace_for_snake_case(&self, sentence: impl Into<String>) -> String {
+        let sentence = sentence.into();
+        for target in self.store.iter() {
+            let snake_case = to_snake(target);
+            if sentence.contains(&snake_case) {
+                return sentence.replace(&snake_case, &Self::to_other_case(target.as_str()));
+            }
         }
+        return sentence;
+    }
+    fn to_other_case(target: &str) -> String {
+        target.chars().map(|c| c.to_ascii_lowercase()).collect()
     }
     pub fn add(&mut self, target: impl Into<String>) {
         self.store.push(target.into());
@@ -30,15 +37,11 @@ mod tests {
 
     #[test]
     #[allow(non_snake_case)]
-    fn 登録されたパスカルケースの名称が他のケースに変換される場合はすべて小文字に変換される() {
-        let mut sut = ReservedPascalCaseIdentifies::wellknown();
-        sut.add("UKai");
-        assert_eq!(sut.to_other_case("UKai"), "ukai");
-    }
-    #[test]
-    #[allow(non_snake_case)]
-    fn GitHubをパスカルケース以外に変換するとgithub() {
+    fn 登録されたパスカルケースの名称に当てはまる箇所ををすべて小文字に変換する() {
         let sut = ReservedPascalCaseIdentifies::wellknown();
-        assert_eq!(sut.to_other_case("GitHub"), "github");
+        assert_eq!(
+            sut.replace_for_snake_case("use_git_hub_enterprise_git_hub"),
+            "use_github_enterprise_github"
+        );
     }
 }
