@@ -42,13 +42,44 @@ pub fn is_non_principal(source: &str) -> bool {
 
 pub fn to_snake_consider_with_wellknown_word(source: &str) -> String {
     let snake = to_snake(source);
-    ReservedPascalCaseIdentifies::wellknown().replace_for_snake_case(&snake)
+    ReservedPascalCaseIdentifies::wellknown().replace_for_snake_case(snake)
+}
+pub fn to_snake_consider_with_words(source: &str, words: Vec<&str>) -> String {
+    let mut reserved_store = ReservedPascalCaseIdentifies::new();
+    words.into_iter().for_each(|s| reserved_store.add(s));
+    let snake = to_snake(source);
+    reserved_store.replace_for_snake_case(snake)
+}
+pub fn to_snake_consider_with_wellknown_and_others(source: &str, words: Vec<&str>) -> String {
+    let mut reserved_store = ReservedPascalCaseIdentifies::wellknown();
+    words.into_iter().for_each(|s| reserved_store.add(s));
+    let snake = to_snake(source);
+    reserved_store.replace_for_snake_case(snake)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::fns::to_snake_consider_with_wellknown_word;
+    use crate::fns::{
+        to_snake_consider_with_wellknown_and_others, to_snake_consider_with_wellknown_word,
+        to_snake_consider_with_words,
+    };
 
+    #[test]
+    fn pascal_caseの名称を登録しかつ予約語を考慮できる() {
+        let source = "UKaiUseGitHubEnterpriseGitHub";
+
+        let result = to_snake_consider_with_wellknown_and_others(source, vec!["UKai"]);
+
+        assert_eq!(result, "ukai_use_github_enterprise_github");
+    }
+    #[test]
+    fn pascal_caseの名称を登録して考慮できる() {
+        let source = "UKaiUseGitHubEnterpriseGitHub";
+
+        let result = to_snake_consider_with_words(source, vec!["UKai"]);
+
+        assert_eq!(result, "ukai_use_git_hub_enterprise_git_hub");
+    }
     #[test]
     fn 登録されたpascal_caseの名称を考慮できる() {
         let source = "UseGitHubEnterpriseGitHub";

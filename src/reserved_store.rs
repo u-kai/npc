@@ -6,6 +6,9 @@ pub(crate) struct ReservedPascalCaseIdentifies {
 }
 
 impl ReservedPascalCaseIdentifies {
+    pub fn new() -> Self {
+        Self { store: Vec::new() }
+    }
     pub fn wellknown() -> Self {
         let store = vec!["GitHub", "TypeScript", "JavaScript", "JavaScript", "DeepL"];
 
@@ -14,15 +17,16 @@ impl ReservedPascalCaseIdentifies {
         }
     }
     pub fn replace_for_snake_case(&self, sentence: impl Into<String>) -> String {
-        let sentence = sentence.into();
+        let mut result = sentence.into();
         for target in self.store.iter() {
             let snake_case = to_snake(target);
-            if sentence.contains(&snake_case) {
-                return sentence.replace(&snake_case, &Self::to_other_case(target.as_str()));
+            if result.contains(&snake_case) {
+                result = result.replace(&snake_case, &Self::to_other_case(target.as_str()));
             }
         }
-        return sentence;
+        result
     }
+
     fn to_other_case(target: &str) -> String {
         target.chars().map(|c| c.to_ascii_lowercase()).collect()
     }
