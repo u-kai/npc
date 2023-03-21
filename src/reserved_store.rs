@@ -10,8 +10,7 @@ impl ReservedPascalCaseIdentifies {
         Self { store: Vec::new() }
     }
     pub fn wellknown() -> Self {
-        let store = vec!["GitHub", "TypeScript", "JavaScript", "JavaScript", "DeepL"];
-
+        let store = vec!["GitHub", "TypeScript", "JavaScript", "DeepL"];
         Self {
             store: store.into_iter().map(String::from).collect(),
         }
