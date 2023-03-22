@@ -64,6 +64,13 @@ mod tests {
         to_snake_consider_with_words,
     };
 
+    use super::to_pascal;
+    #[test]
+    fn うまくいかなかったケースを調査() {
+        let sut = "get_edge_configuration_stack_with_edge_id9012";
+        assert_eq!(to_pascal(sut), "GetEdgeConfigurationStackWithEdgeId9012");
+    }
+
     #[test]
     fn pascal_caseの名称を登録しかつ予約語を考慮できる() {
         let source = "UKaiUseGitHubEnterpriseGitHub";

@@ -49,25 +49,25 @@ impl<'a> NamingPrincipal<'a> {
             || Self::is_snake(source))
     }
     pub fn is_flat(source: &'a str) -> bool {
-        !Self::is_empty(source) && source.chars().all(|c| c.is_lowercase())
+        !Self::is_empty(source) && source.chars().all(|c| c.is_lowercase() || c.is_numeric())
     }
     pub fn is_chain(source: &'a str) -> bool {
         !Self::is_empty(source)
             && source
                 .chars()
-                .all(|c| c == '-' || c != '_' && c.is_lowercase())
+                .all(|c| c == '-' || c != '_' && c.is_lowercase() || c.is_numeric())
     }
     pub fn is_constant(source: &'a str) -> bool {
         !Self::is_empty(source)
             && source
                 .chars()
-                .all(|c| c == '_' || c != '-' && c.is_uppercase())
+                .all(|c| c == '_' || c != '-' && c.is_uppercase() || c.is_numeric())
     }
     pub fn is_snake(source: &'a str) -> bool {
         !Self::is_empty(source)
             && source
                 .chars()
-                .all(|c| c == '_' || c != '-' && c.is_lowercase())
+                .all(|c| c == '_' || c != '-' && c.is_lowercase() || c.is_numeric())
     }
     pub fn is_pascal(source: &'a str) -> bool {
         if Self::is_empty(source) || source.contains("_") || source.contains("-") {
@@ -77,7 +77,7 @@ impl<'a> NamingPrincipal<'a> {
         if !first.is_uppercase() {
             return false;
         }
-        !source.chars().all(|c| c.is_uppercase())
+        !source.chars().all(|c| c.is_uppercase() || c.is_numeric())
     }
     pub fn is_camel(source: &'a str) -> bool {
         if Self::is_empty(source) || source.contains("_") || source.contains("-") {
