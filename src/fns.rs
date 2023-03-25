@@ -1,6 +1,6 @@
 use crate::{
     convertor::NamingPrincipalConvertor, naming_principal::NamingPrincipal,
-    reserved_store::ReservedPascalCaseIdentifies,
+    reserved_store::PascalCaseReservedIdentifiers,
 };
 
 pub fn to_camel(source: &str) -> String {
@@ -42,16 +42,16 @@ pub fn is_non_principal(source: &str) -> bool {
 
 pub fn to_snake_consider_with_wellknown_word(source: &str) -> String {
     let snake = to_snake(source);
-    ReservedPascalCaseIdentifies::wellknown().replace_for_snake_case(snake)
+    PascalCaseReservedIdentifiers::wellknown().replace_for_snake_case(snake)
 }
 pub fn to_snake_consider_with_words(source: &str, words: Vec<&str>) -> String {
-    let mut reserved_store = ReservedPascalCaseIdentifies::new();
+    let mut reserved_store = PascalCaseReservedIdentifiers::new();
     words.into_iter().for_each(|s| reserved_store.add(s));
     let snake = to_snake(source);
     reserved_store.replace_for_snake_case(snake)
 }
 pub fn to_snake_consider_with_wellknown_and_others(source: &str, words: Vec<&str>) -> String {
-    let mut reserved_store = ReservedPascalCaseIdentifies::wellknown();
+    let mut reserved_store = PascalCaseReservedIdentifiers::wellknown();
     words.into_iter().for_each(|s| reserved_store.add(s));
     let snake = to_snake(source);
     reserved_store.replace_for_snake_case(snake)

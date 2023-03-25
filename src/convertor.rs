@@ -1,5 +1,22 @@
+/// This module provides a struct `NamingPrincipalConvertor` that converts
+/// a string to various naming conventions such as camel case, snake case,
+/// pascal case, and chain case.
 use crate::naming_principal::NamingPrincipal;
 
+/// A struct that converts a string to various naming conventions.
+///
+/// # Examples
+///
+/// ```
+/// use naming_convention::NamingPrincipalConvertor;
+///
+/// let convertor = NamingPrincipalConvertor::new("some_snake_case_name");
+/// assert_eq!(convertor.to_camel(), "someSnakeCaseName");
+/// assert_eq!(convertor.to_pascal(), "SomeSnakeCaseName");
+/// assert_eq!(convertor.to_snake(), "some_snake_case_name");
+/// assert_eq!(convertor.to_chain(), "some-snake-case-name");
+/// assert_eq!(convertor.to_constant(), "SOME_SNAKE_CASE_NAME");
+/// ```
 #[derive(Debug, Clone)]
 pub struct NamingPrincipalConvertor<'a> {
     original: &'a str,

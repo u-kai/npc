@@ -1,11 +1,11 @@
 use crate::fns::to_snake;
 
 #[derive(Debug, Clone)]
-pub(crate) struct ReservedPascalCaseIdentifies {
+pub(crate) struct PascalCaseReservedIdentifiers {
     store: Vec<String>,
 }
 
-impl ReservedPascalCaseIdentifies {
+impl PascalCaseReservedIdentifiers {
     pub fn new() -> Self {
         Self { store: Vec::new() }
     }
@@ -36,12 +36,12 @@ impl ReservedPascalCaseIdentifies {
 
 #[cfg(test)]
 mod tests {
-    use crate::reserved_store::ReservedPascalCaseIdentifies;
+    use crate::reserved_store::PascalCaseReservedIdentifiers;
 
     #[test]
     #[allow(non_snake_case)]
     fn 登録されたパスカルケースの名称に当てはまる箇所ををすべて小文字に変換する() {
-        let sut = ReservedPascalCaseIdentifies::wellknown();
+        let sut = PascalCaseReservedIdentifiers::wellknown();
         assert_eq!(
             sut.replace_for_snake_case("use_git_hub_enterprise_git_hub"),
             "use_github_enterprise_github"
