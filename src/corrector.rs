@@ -34,6 +34,12 @@ impl InvalidCharacterCorrector {
     pub fn to_constant(&self, source: &str) -> String {
         to_constant(&self.to_snake(source))
     }
+    pub fn add_invalid_character(&mut self, character: char) {
+        self.invalid_characters.push(character);
+    }
+    pub fn remove_invalid_character(&mut self, character: char) {
+        self.invalid_characters.retain(|c| c != &character);
+    }
     fn replace(&self, source: &str, target: &str) -> String {
         let mut result = source.replace(|c| self.invalid_characters.contains(&c), target);
         if result.get(result.len() - target.len()..result.len()) == Some(target) {
@@ -55,6 +61,20 @@ impl Default for InvalidCharacterCorrector {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn プログラム言語にとって不正な文字デフォルトから削除することができる() {
+        let source = "invalid#identifier";
+        let mut sut = InvalidCharacterCorrector::default();
+        sut.remove_invalid_character('#');
+        assert_eq!(sut.to_snake(source), "invalid#identifier");
+    }
+    #[test]
+    fn プログラム言語にとって不正な文字は追加することができる() {
+        let source = "invalid#identifier";
+        let mut sut = InvalidCharacterCorrector::new();
+        sut.add_invalid_character('#');
+        assert_eq!(sut.to_snake(source), "invalid_identifier");
+    }
     #[test]
     fn プログラム言語にとって不正な文字を修正して任意の命名規則にする() {
         let source = "invalid:identifier";
