@@ -35,7 +35,11 @@ impl InvalidCharacterCorrector {
         to_constant(&self.to_snake(source))
     }
     fn replace(&self, source: &str, target: &str) -> String {
-        source.replace(|c| self.invalid_characters.contains(&c), target)
+        let mut result = source.replace(|c| self.invalid_characters.contains(&c), target);
+        if result.get(result.len() - target.len()..result.len()) == Some(target) {
+            result.pop();
+        }
+        result
     }
 }
 impl Default for InvalidCharacterCorrector {
@@ -54,6 +58,12 @@ mod tests {
     #[test]
     fn プログラム言語にとって不正な文字を修正して任意の命名規則にする() {
         let source = "invalid:identifier";
+        let sut = InvalidCharacterCorrector::default();
+        assert_eq!(sut.to_snake(source), "invalid_identifier");
+        assert_eq!(sut.to_camel(source), "invalidIdentifier");
+        assert_eq!(sut.to_pascal(source), "InvalidIdentifier");
+        assert_eq!(sut.to_constant(source), "INVALID_IDENTIFIER");
+        let source = "invalid identifier@";
         let sut = InvalidCharacterCorrector::default();
         assert_eq!(sut.to_snake(source), "invalid_identifier");
         assert_eq!(sut.to_camel(source), "invalidIdentifier");
