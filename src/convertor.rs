@@ -8,7 +8,7 @@ use crate::naming_principal::NamingPrincipal;
 /// # Examples
 ///
 /// ```
-/// use naming_convention::NamingPrincipalConvertor;
+/// use npc::convertor::NamingPrincipalConvertor;
 ///
 /// let convertor = NamingPrincipalConvertor::new("some_snake_case_name");
 /// assert_eq!(convertor.to_camel(), "someSnakeCaseName");
