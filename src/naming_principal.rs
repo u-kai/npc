@@ -12,7 +12,7 @@ pub enum NamingPrincipal<'a> {
 
 impl<'a> NamingPrincipal<'a> {
     pub fn new(source: &'a str) -> Self {
-        //flat containe camel and snake and chain that's why is_flat is position top
+        //flat contain camel and snake and chain that's why is_flat is position top
         if Self::is_flat(source) {
             return Self::Flat(source);
         }

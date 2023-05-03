@@ -1,6 +1,6 @@
 use crate::fns::{to_camel, to_constant, to_pascal, to_snake};
 
-/// InvalidCharacterCorrector is a struct to correct invalid characters for programing language.
+/// InvalidCharacterCorrector is a struct to correct invalid characters for programming language.
 ///
 /// For example, if you want to convert "invalid:identifier" to snake_case, you can use this struct.
 /// ## Example
@@ -62,7 +62,7 @@ impl Default for InvalidCharacterCorrector {
 mod tests {
     use super::*;
     #[test]
-    fn プログラム言語にとって不正な文字デフォルトから削除することができる() {
+    fn プログラム言語にとって不正な文字はデフォルトから削除することができる() {
         let source = "invalid#identifier";
         let mut sut = InvalidCharacterCorrector::default();
         sut.remove_invalid_character('#');

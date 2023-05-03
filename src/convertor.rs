@@ -242,7 +242,7 @@ impl<'a> NamingPrincipalConvertor<'a> {
                             // case - before upper
                             // ex: A-D
                             // if not impl below process
-                            // tobe a__d
+                            // to be a__d
                             if let Some(Some(next_char)) = non_principal
                                 .get(i + 1..i + 2)
                                 .map(|str| str.chars().next())
