@@ -57,12 +57,14 @@ pub fn to_snake_consider_with_wellknown_and_others(source: &str, words: Vec<&str
     reserved_store.replace_for_snake_case(snake)
 }
 
+pub fn to_constant_consider_with_wellknown_word(source: &str) -> String {
+    let constant = to_constant(source);
+    PascalCaseReservedIdentifiers::wellknown().replace_for_constant_case(constant)
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::fns::{
-        to_snake_consider_with_wellknown_and_others, to_snake_consider_with_wellknown_word,
-        to_snake_consider_with_words,
-    };
+    use super::*;
 
     use super::to_pascal;
     #[test]
@@ -72,7 +74,7 @@ mod tests {
     }
 
     #[test]
-    fn pascal_caseの名称を登録しかつ予約語を考慮できる() {
+    fn pascal_caseの名称を予約語を考慮できる_ver_constant() {
         let source = "UKaiUseGitHubEnterpriseGitHub";
 
         let result = to_snake_consider_with_wellknown_and_others(source, vec!["UKai"]);
@@ -90,9 +92,10 @@ mod tests {
     #[test]
     fn 登録されたpascal_caseの名称を考慮できる() {
         let source = "UseGitHubEnterpriseGitHub";
-
         let result = to_snake_consider_with_wellknown_word(source);
-
         assert_eq!(result, "use_github_enterprise_github");
+
+        let result = to_constant_consider_with_wellknown_word(source);
+        assert_eq!(result, "USE_GITHUB_ENTERPRISE_GITHUB");
     }
 }
