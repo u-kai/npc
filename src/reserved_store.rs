@@ -1,4 +1,4 @@
-use crate::fns::{to_constant, to_snake};
+use crate::fns::{to_chain, to_constant, to_snake};
 
 #[derive(Debug, Clone)]
 pub(crate) struct PascalCaseReservedIdentifiers {
@@ -31,6 +31,16 @@ impl PascalCaseReservedIdentifiers {
             let constant_case = to_constant(target);
             if result.contains(&constant_case) {
                 result = result.replace(&constant_case, &Self::to_upper_case(target.as_str()));
+            }
+        }
+        result
+    }
+    pub fn replace_for_chain_case(&self, sentence: impl Into<String>) -> String {
+        let mut result = sentence.into();
+        for target in self.store.iter() {
+            let chain_case = to_chain(target);
+            if result.contains(&chain_case) {
+                result = result.replace(&chain_case, &Self::to_lower_case(target.as_str()));
             }
         }
         result
