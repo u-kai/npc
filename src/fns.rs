@@ -88,6 +88,10 @@ pub fn to_chain_consider_with_wellknown_word_and_others(source: &str, words: &[&
     let chain = to_chain(source);
     reserved_store.replace_for_chain_case(chain)
 }
+pub fn to_pascal_consider_with_wellknown_word(source: &str) -> String {
+    let pascal = to_pascal(source);
+    PascalCaseReservedIdentifiers::wellknown().replace_for_pascal_case(pascal)
+}
 
 #[cfg(test)]
 mod tests {
@@ -129,6 +133,18 @@ mod tests {
         assert_eq!(result, "USE_GITHUB_ENTERPRISE_GITHUB");
         let result = to_chain_consider_with_wellknown_word(source);
         assert_eq!(result, "use-github-enterprise-github");
+    }
+    #[test]
+    fn 登録されたpascal_caseの名称を考慮してpascal_caseに変換できる() {
+        let source = "github_user";
+        let result = to_pascal_consider_with_wellknown_word(source);
+        assert_eq!(result, "GitHubUser");
+        let source = "github-user";
+        let result = to_pascal_consider_with_wellknown_word(source);
+        assert_eq!(result, "GitHubUser");
+        let source = "githubUser";
+        let result = to_pascal_consider_with_wellknown_word(source);
+        assert_eq!(result, "GitHubUser");
     }
     #[test]
     fn うまくいかなかったケースを調査() {
