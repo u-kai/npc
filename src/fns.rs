@@ -88,6 +88,18 @@ pub fn to_chain_consider_with_wellknown_word_and_others(source: &str, words: &[&
     let chain = to_chain(source);
     reserved_store.replace_for_chain_case(chain)
 }
+pub fn to_pascal_consider_with_wellknown_word_and_others(source: &str, words: &[&str]) -> String {
+    let mut reserved_store = PascalCaseReservedIdentifiers::wellknown();
+    words.into_iter().for_each(|s| reserved_store.add(*s));
+    let pascal = to_pascal(source);
+    reserved_store.replace_for_pascal_case(pascal)
+}
+pub fn to_pascal_consider_with_words(source: &str, words: &[&str]) -> String {
+    let mut reserved_store = PascalCaseReservedIdentifiers::new();
+    words.into_iter().for_each(|s| reserved_store.add(*s));
+    let pascal = to_pascal(source);
+    reserved_store.replace_for_pascal_case(pascal)
+}
 pub fn to_pascal_consider_with_wellknown_word(source: &str) -> String {
     let pascal = to_pascal(source);
     PascalCaseReservedIdentifiers::wellknown().replace_for_pascal_case(pascal)
@@ -110,6 +122,13 @@ mod tests {
         assert_eq!(result, "UKAI_USE_GITHUB_ENTERPRISE_GITHUB");
         let result = to_chain_consider_with_wellknown_word_and_others(source, &words);
         assert_eq!(result, "ukai-use-github-enterprise-github");
+
+        let source = "ukai-use-github-enterprise-github";
+        let words = vec!["UKai"];
+        assert_eq!(
+            to_pascal_consider_with_wellknown_word_and_others(source, &words),
+            "UKaiUseGitHubEnterpriseGitHub"
+        );
     }
     #[test]
     fn pascal_caseの名称を登録して考慮できる() {

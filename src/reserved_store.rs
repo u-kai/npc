@@ -52,9 +52,7 @@ impl PascalCaseReservedIdentifiers {
     }
     pub fn replace_for_pascal_case(&self, sentence: impl Into<String>) -> String {
         let mut result = to_pascal(sentence.into().as_str());
-        println!("{:#?}", result);
         for (i, target) in self.non_replace_reserved_store.iter().enumerate() {
-            println!("{:#?}", result);
             if result.contains(target) {
                 result = result.replace(target, self.reserved_pascal_store[i].as_str());
             }
