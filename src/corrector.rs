@@ -1,4 +1,4 @@
-use crate::fns::{to_camel, to_constant, to_pascal, to_snake};
+use crate::{to_camel, to_constant, to_pascal, to_snake};
 
 /// InvalidCharacterCorrector is a struct to correct invalid characters for programming language.
 ///

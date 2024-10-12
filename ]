@@ -1,7 +1,13 @@
-use crate::{
-    convertor::NamingPrincipalConvertor, naming_principal::NamingPrincipal,
-    reserved_store::PascalCaseReservedIdentifiers,
-};
+mod convertor;
+mod corrector;
+mod naming_principal;
+mod reserved_store;
+
+use crate::{convertor::NamingPrincipalConvertor, reserved_store::PascalCaseReservedIdentifiers};
+
+pub struct Parameter {
+    source: String,
+}
 
 pub fn to_camel(source: &str) -> String {
     NamingPrincipalConvertor::new(source).to_camel()
@@ -18,26 +24,33 @@ pub fn to_constant(source: &str) -> String {
 pub fn to_chain(source: &str) -> String {
     NamingPrincipalConvertor::new(source).to_chain()
 }
-pub fn is_flat(source: &str) -> bool {
-    NamingPrincipal::is_flat(source)
+
+pub trait Convert {
+    fn convert(&self, source: &str) -> String;
 }
-pub fn is_camel(source: &str) -> bool {
-    NamingPrincipal::is_camel(source)
+impl<F> Convert for F
+where
+    F: Fn(&str) -> String,
+{
+    fn convert(&self, source: &str) -> String {
+        self(source)
+    }
 }
-pub fn is_pascal(source: &str) -> bool {
-    NamingPrincipal::is_pascal(source)
+
+pub fn to_camel_with_pre_convert<T: Convert>(source: &str, convert: T) -> String {
+    to_camel(&convert.convert(source))
 }
-pub fn is_snake(source: &str) -> bool {
-    NamingPrincipal::is_snake(source)
+pub fn to_pascal_with_pre_convert<T: Convert>(source: &str, convert: T) -> String {
+    to_pascal(&convert.convert(source))
 }
-pub fn is_constant(source: &str) -> bool {
-    NamingPrincipal::is_constant(source)
+pub fn to_snake_with_pre_convert<T: Convert>(source: &str, convert: T) -> String {
+    to_snake(&convert.convert(source))
 }
-pub fn is_chain(source: &str) -> bool {
-    NamingPrincipal::is_chain(source)
+pub fn to_constant_with_pre_convert<T: Convert>(source: &str, convert: T) -> String {
+    to_constant(&convert.convert(source))
 }
-pub fn is_non_principal(source: &str) -> bool {
-    NamingPrincipal::is_non_principal(source)
+pub fn to_chain_with_pre_convert<T: Convert>(source: &str, convert: T) -> String {
+    to_chain(&convert.convert(source))
 }
 
 pub fn to_snake_consider_with_wellknown_word(source: &str) -> String {
@@ -112,7 +125,7 @@ mod tests {
     use super::to_pascal;
 
     #[test]
-    fn pascal_caseの名称を予約語を考慮できる() {
+    fn consider_reserved_words_in_pascal_case_names() {
         let source = "UKaiUseGitHubEnterpriseGitHub";
         let words = vec!["UKai"];
 
@@ -131,7 +144,7 @@ mod tests {
         );
     }
     #[test]
-    fn pascal_caseの名称を登録して考慮できる() {
+    fn consider_registered_names_in_pascal_case() {
         let source = "UKaiUseGitHubEnterpriseGitHub";
         let words = vec!["UKai"];
 
@@ -143,7 +156,7 @@ mod tests {
         assert_eq!(result, "ukai-use-git-hub-enterprise-git-hub");
     }
     #[test]
-    fn 登録されたpascal_caseの名称を考慮できる() {
+    fn consider_pascal_case_names_with_registered_words() {
         let source = "UseGitHubEnterpriseGitHub";
 
         let result = to_snake_consider_with_wellknown_word(source);
@@ -154,7 +167,7 @@ mod tests {
         assert_eq!(result, "use-github-enterprise-github");
     }
     #[test]
-    fn 登録されたpascal_caseの名称を考慮してpascal_caseに変換できる() {
+    fn convert_to_pascal_case_considering_registered_names() {
         let source = "github_user";
         let result = to_pascal_consider_with_wellknown_word(source);
         assert_eq!(result, "GitHubUser");
@@ -166,7 +179,7 @@ mod tests {
         assert_eq!(result, "GitHubUser");
     }
     #[test]
-    fn うまくいかなかったケースを調査() {
+    fn investigate_cases_that_did_not_work() {
         let sut = "get_edge_configuration_stack_with_edge_id9012";
         assert_eq!(to_pascal(sut), "GetEdgeConfigurationStackWithEdgeId9012");
     }
