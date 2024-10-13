@@ -1,14 +1,14 @@
 pub mod convertor;
 pub mod corrector;
 
-pub trait PostConvert {
-    fn convert(&self, source: &str, principal: Principal) -> String;
-}
 pub trait PreConvert {
     fn convert(&self, source: &str, principal: Principal) -> String;
 }
+pub trait PostConvert {
+    fn convert(&self, source: &str, principal: Principal) -> String;
+}
 
-impl<F> PostConvert for F
+impl<F> PreConvert for F
 where
     F: Fn(&str, Principal) -> String,
 {
@@ -16,7 +16,7 @@ where
         self(source, principal)
     }
 }
-impl<F> PreConvert for F
+impl<F> PostConvert for F
 where
     F: Fn(&str, Principal) -> String,
 {
@@ -206,18 +206,15 @@ impl<'a> NamingPrincipalConvertor<'a> {
             NamingPrincipal::Flat(flat) => flat.chars().map(|c| c.to_ascii_uppercase()).collect(),
             NamingPrincipal::Camel(_) => {
                 let snake = self.to_snake();
-                let np = NamingPrincipalConvertor::new(&snake);
-                np.to_constant()
+                snake.chars().map(|c| c.to_ascii_uppercase()).collect()
             }
             NamingPrincipal::Pascal(_) => {
                 let snake = self.to_snake();
-                let np = NamingPrincipalConvertor::new(&snake);
-                np.to_constant()
+                snake.chars().map(|c| c.to_ascii_uppercase()).collect()
             }
             NamingPrincipal::NonPrincipal(_) => {
                 let snake = self.to_snake();
-                let np = NamingPrincipalConvertor::new(&snake);
-                np.to_constant()
+                snake.chars().map(|c| c.to_ascii_uppercase()).collect()
             }
             _ => self.original.to_string(),
         }
@@ -230,8 +227,7 @@ impl<'a> NamingPrincipalConvertor<'a> {
             NamingPrincipal::Camel(camel) => Self::first_char_to_upper(camel),
             NamingPrincipal::NonPrincipal(_) => {
                 let snake = self.to_snake();
-                let np = NamingPrincipalConvertor::new(&snake);
-                np.to_pascal()
+                Self::split_case_to_pascal(&snake, '_')
             }
             NamingPrincipal::Constant(constant) => {
                 let mut result = String::new();

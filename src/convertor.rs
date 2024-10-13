@@ -135,6 +135,40 @@ impl PascalCaseReservedIdentifiersConverter {
     }
 }
 
+pub struct IgnoreWordsConverter<'a> {
+    inner: &'a [&'a str],
+}
+impl<'a> IgnoreWordsConverter<'a> {
+    pub fn new(inner: &'a [&'a str]) -> Self {
+        Self { inner }
+    }
+    pub fn to_convertor(self) -> Box<Self> {
+        Box::new(self)
+    }
+    fn fix_for<F: Fn(&str) -> String>(&self, converted: &str, convert_fn: F) -> String {
+        let mut result = converted.to_string();
+        for ignore_word in self.inner.iter() {
+            let converted_ignore_word = convert_fn(ignore_word);
+            if result.contains(&converted_ignore_word) {
+                result = result.replace(&converted_ignore_word, ignore_word);
+            }
+        }
+        result
+    }
+}
+
+impl PostConvert for IgnoreWordsConverter<'_> {
+    fn convert(&self, source: &str, principal: Principal) -> String {
+        match principal {
+            Principal::Snake => self.fix_for(source, to_snake),
+            Principal::Chain => self.fix_for(source, to_chain),
+            Principal::Constant => self.fix_for(source, to_constant),
+            Principal::Pascal => self.fix_for(source, to_pascal),
+            Principal::Camel => self.fix_for(source, to_camel),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -168,6 +202,27 @@ mod tests {
         );
 
         assert_eq!(convert(&params), "UKaiUseGitHubEnterpriseGitHub");
+    }
+    #[test]
+    fn consider_ignore_words() {
+        let source = "HelloWorld! GoodBye";
+        let ignores = IgnoreWordsConverter::new(&["HelloWorld"]);
+        let params =
+            Parameter::new(source, Principal::Snake).add_post_convert(ignores.to_convertor());
+        // TODO:Fix
+        assert_eq!(convert(&params), "HelloWorld! _good_bye");
+
+        let params = params.change_principal(Principal::Constant);
+        // TODO:Fix
+        assert_eq!(convert(&params), "HelloWorld! _GOOD_BYE");
+
+        // TODO:Fix
+        let params = params.change_principal(Principal::Chain);
+        assert_eq!(convert(&params), "HelloWorld! -good-bye");
+
+        //  TODO:Fix
+        let params = params.change_principal(Principal::Camel);
+        assert_eq!(convert(&params), "HelloWorld! GoodBye");
     }
     #[test]
     fn consider_pascal_case_names_with_wellknown_words() {
