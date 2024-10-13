@@ -431,6 +431,7 @@ pub(self) mod naming_principal_test_data {
     pub(crate) const CHAIN_CASE2: &'static str = "-chain-case";
     pub(crate) const NONPRINCIPAL_CASE1: &'static str = "A_data";
     pub(crate) const NONPRINCIPAL_CASE2: &'static str = "ABC-Data_";
+    pub(crate) const NONPRINCIPAL_CASE3: &'static str = "ABC- Data";
 }
 
 #[cfg(test)]
