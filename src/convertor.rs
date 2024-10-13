@@ -135,12 +135,14 @@ impl PascalCaseReservedIdentifiersConverter {
     }
 }
 
-pub struct IgnoreWordsConverter<'a> {
-    inner: &'a [&'a str],
+pub struct IgnoreWordsConverter {
+    inner: Vec<String>,
 }
-impl<'a> IgnoreWordsConverter<'a> {
-    pub fn new(inner: &'a [&'a str]) -> Self {
-        Self { inner }
+impl IgnoreWordsConverter {
+    pub fn new(inner: &[&str]) -> Self {
+        Self {
+            inner: inner.iter().map(|s| s.to_string()).collect(),
+        }
     }
     pub fn to_convertor(self) -> Box<Self> {
         Box::new(self)
@@ -157,7 +159,7 @@ impl<'a> IgnoreWordsConverter<'a> {
     }
 }
 
-impl PostConvert for IgnoreWordsConverter<'_> {
+impl PostConvert for IgnoreWordsConverter {
     fn convert(&self, source: &str, principal: Principal) -> String {
         match principal {
             Principal::Snake => self.fix_for(source, to_snake),
